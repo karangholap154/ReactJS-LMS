@@ -7,38 +7,49 @@ import humanizeDuration from 'humanize-duration'
 import Footer from '../../components/student/Footer'
 import YouTube from 'react-youtube'
 
+// CourseDetails component to display course details
 const CourseDetails = () => {
 
+  // Get course ID from URL parameters
   const { id } = useParams()
   
+  // Initialize state variables
   const [courseData, setCourseData] = useState(null)
   const [openSections, setOpenSections] = useState({})
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false)
   const [playerData, setPlayerData] = useState(null)
   
+  // Get context variables from AppContext
   const { allCourses, calculateRating, calculateChapterTime, calculateCourseDuration, calculateNoOfLectures, currency } = useContext(AppContext)
   
+  // Fetch course data from allCourses array
   const fetchCourseData = async () => {
     const findCourse = allCourses.find(course => course._id === id)
     setCourseData(findCourse)
   }
 
+  // Fetch course data when component mounts or allCourses array changes
   useEffect(() => {
     fetchCourseData()
   }, [allCourses])
 
+  // Toggle section open state
   const toggleSection = (index) => {
     setOpenSections((prev) => (
       { ...prev, [index]: !prev[index] }
     ))
   }
 
+  // Return course details if course data is available, otherwise return Loading component
   return courseData ? (
     <>
+    {/* Course details container */}
     <div className='relative flex flex-col-reverse items-start justify-between gap-10 px-8 pt-20 text-left md:flex-row md:px-36 md:pt-30'>
 
+      {/* Gradient background */}
       <div className='absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-cyan-100/70'></div>
       
+      {/* Course details */}
       <div className='z-10 max-w-xl text-gray-500'>
         <h1 className='font-semibold text-gray-800 md:text-course-details-heading-large text-course-details-heading-small'>{courseData.courseTitle}</h1>
         <p className='pt-4 text-sm md:text-base' dangerouslySetInnerHTML={{ __html: courseData.courseDescription.slice(0, 200) }}></p>
@@ -94,18 +105,16 @@ const CourseDetails = () => {
           </div>
       </div>
       
-      
-        
-        
+      {/* Course thumbnail and details */}
       <div className='z-10 overflow-hidden bg-white rounded-t max-w-course-card shadow-custom-card md:rounded-none min-w-[300px] sm:min-w-[420px]'>
           
-          {
-            playerData ? 
+          {/* Display YouTube video if player data is available, otherwise display course thumbnail */}
+          {playerData ? 
             <YouTube videoId={playerData.videoId} opts={{playerVars: {autoplay: 1}}} iframeClassName='w-full aspect-video' />
             : <img src={courseData.courseThumbnail} alt="" />
           }
           
-          
+          {/* Course details */}
           <div className='p-5'>
             <div className='flex items-center gap-2'>
               <img className='w-3.5' src={assets.time_left_clock_icon} alt="clock" />
@@ -158,7 +167,7 @@ const CourseDetails = () => {
       
       </div>
       <Footer/>
-    </>
+    </> 
   ) : <Loading/>
 }
 
